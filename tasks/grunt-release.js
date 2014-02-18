@@ -76,20 +76,16 @@ module.exports = function(grunt){
 
     function getTagTypeArg(){
       var type = grunt.option('tagType') || options.tagType;
-      arg = '';
-      switch(type)
-      {
+      switch(type) {
         case 'annotated':
-          arg = '--annotate ';
+          return arg = '--annotate ';
         case 'signed':
-          arg = '--sign ';
+          return '--sign ';
         case 'lightweight':
-          arg = '';
+          return '';
         default:
-          throw 'Unrecognized tagType: ' + type;
-
+          throw grunt.util.error('Unrecognized tagType: "' + type + '".');
       }
-     return arg;
     }
 
     function ifEnabled(option, fn){
