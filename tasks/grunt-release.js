@@ -81,6 +81,8 @@ module.exports = function(grunt){
           return arg = '--annotate ';
         case 'lightweight':
           return '';
+        case 'signed':
+          return '--sign ';
         default:
           throw grunt.util.error('Unrecognized tagType: "' + type + '".');
       }
