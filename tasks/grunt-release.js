@@ -109,7 +109,7 @@ module.exports = function(grunt){
     }
 
     function tag(){
-      return run('git tag ' + tagName + ' -m "'+ tagMessage +'"', 'created new git tag: ' + tagName);
+      return run('git tag --annotate ' + tagName + ' -m "'+ tagMessage +'"', 'created new git tag: ' + tagName);
     }
 
     function push(){
