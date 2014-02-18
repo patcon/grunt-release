@@ -79,8 +79,6 @@ module.exports = function(grunt){
       switch(type) {
         case 'annotated':
           return arg = '--annotate ';
-        case 'signed':
-          return '--sign ';
         case 'lightweight':
           return '';
         default:
