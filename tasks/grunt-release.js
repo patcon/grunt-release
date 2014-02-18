@@ -32,6 +32,7 @@ module.exports = function(grunt){
         version: config.newVersion
       }
     };
+    var tagType = grunt.template.process(grunt.config.getRaw('release.options.tagType') || 'annotated', templateOptions);
     var tagName = grunt.template.process(grunt.config.getRaw('release.options.tagName') || '<%= version %>', templateOptions);
     var commitMessage = grunt.template.process(grunt.config.getRaw('release.options.commitMessage') || 'release <%= version %>', templateOptions);
     var tagMessage = grunt.template.process(grunt.config.getRaw('release.options.tagMessage') || 'version <%= version %>', templateOptions);
@@ -73,6 +74,24 @@ module.exports = function(grunt){
       return tag;
     }
 
+    function getTagTypeArg(){
+      var type = grunt.option('tagType') || options.tagType;
+      arg = '';
+      switch(type)
+      {
+        case 'annotated':
+          arg = '--annotate ';
+        case 'signed':
+          arg = '--sign ';
+        case 'lightweight':
+          arg = '';
+        default:
+          throw 'Unrecognized tagType: ' + type;
+
+      }
+     return arg;
+    }
+
     function ifEnabled(option, fn){
       if (options[option]) return fn;
     }
@@ -109,7 +128,7 @@ module.exports = function(grunt){
     }
 
     function tag(){
-      return run('git tag --annotate ' + tagName + ' -m "'+ tagMessage +'"', 'created new git tag: ' + tagName);
+      return run('git tag ' + getTagTypeArg() + tagName + ' -m "'+ tagMessage +'"', 'created new ' + tagType + ' git tag: ' + tagName);
     }
 
     function push(){
