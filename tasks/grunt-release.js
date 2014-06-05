@@ -18,6 +18,7 @@ module.exports = function(grunt){
     var options = this.options({
       bump: true,
       file: grunt.config('pkgFile') || 'package.json',
+      bumpShrinkwrap: false,
       add: true,
       commit: true,
       tag: true,
@@ -64,7 +65,10 @@ module.exports = function(grunt){
       if (options.bump) {
         newVersion = semver.inc(pkg.version, type || 'patch');
       }
-      return {file: file, pkg: pkg, newVersion: newVersion};
+      if (options.bumpShrinkwrap) {
+        var shrinkwrap = grunt.file.readJSON('npm-shrinkwrap.json');
+      }
+      return {file: file, pkg: pkg, shrinkwrap: shrinkwrap, newVersion: newVersion};
     }
 
     function getNpmTag(){
@@ -101,11 +105,15 @@ module.exports = function(grunt){
     }
 
     function add(){
-      return run('git add ' + config.file, ' staged ' + config.file);
+      var files = [config.file];
+      if (options.bumpShrinkwrap) { files.push('npm-shrinkwrap.json') };
+      return run('git add ' + files.join(' '), ' staged ' + files.join(', '));
     }
 
     function commit(){
-      return run('git commit '+ config.file +' -m "'+ commitMessage +'"', 'committed ' + config.file);
+      var files = [config.file];
+      if (options.bumpShrinkwrap) { files.push('npm-shrinkwrap.json') };
+      return run('git commit '+ files.join(' ') +' -m "'+ commitMessage +'"', 'committed ' + files.join(', '));
     }
 
     function tag(){
@@ -137,6 +145,12 @@ module.exports = function(grunt){
       return Q.fcall(function () {
         config.pkg.version = config.newVersion;
         grunt.file.write(config.file, JSON.stringify(config.pkg, null, '  ') + '\n');
+
+        if (options.bumpShrinkwrap) {
+          config.shrinkwrap.version = config.newVersion;
+          grunt.file.write('npm-shrinkwrap.json', JSON.stringify(config.shrinkwrap, null, '  ') + '\n');
+        }
+
         grunt.log.ok('bumped version to ' + config.newVersion);
       });
     }

@@ -114,6 +114,7 @@ The following are all the release steps, you can disable any you need to:
   release: {
     options: {
       bump: false, //default: true
+      bumpShrinkwrap: true, //default: false
       file: 'component.json', //default: package.json
       add: false, //default: true
       commit: false, //default: true
